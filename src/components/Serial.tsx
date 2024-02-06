@@ -16,6 +16,7 @@ const Serial: React.FC<Props> = ({ next, isFinished, updateBlock }) => {
   const [randomString, setRandomString] = useState("")
   const [visible, setVisible] = useState(true)
   const [isValid, setValid] = useState(true)
+
   const makeInvisible = useCallback(() => {
     return setTimeout(() => {
       setVisible(false)
@@ -40,18 +41,19 @@ const Serial: React.FC<Props> = ({ next, isFinished, updateBlock }) => {
     init()
   }, [])
 
-  const addErrors = () => {
-    const serial = serialReaction
+  const addErrors = useCallback((spent_time: number) => {
+    const serial = {...serialReaction}
     serial.err_numb += 1
+    serial.spent_time = spent_time
     setSerialReaction((_) => {
       return serial
     })
 
     updateBlock(serial)
-  }
+    next(serialReaction, false)
+  }, [next, serialReaction, updateBlock])
 
   const setFinished = (isToCount: boolean) => {
-    console.log('setFinished')
     const serial: SerialReaction = {
       ...serialReaction,
       finished: isValid

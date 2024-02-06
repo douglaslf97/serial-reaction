@@ -9,7 +9,7 @@ interface Props {
   isFinished: boolean
   setValid: (isValid: boolean) => void
   setFinished: (isToCount: boolean) => void
-  addError: () => void
+  addError: (spent_time: number) => void
 }
 
 const VerifyCode: React.FC<Props> = ({ randomCode, serialReaction, setValid, addError, setFinished, isFinished }) => {
@@ -94,7 +94,7 @@ const VerifyCode: React.FC<Props> = ({ randomCode, serialReaction, setValid, add
         });
       }
     } else {
-      addError()
+      addError(Date.now() - startTime)
       evt.currentTarget.classList.add('border-red-500')
       evt.currentTarget.classList.add('ring-red-700')
       evt.currentTarget.focus()

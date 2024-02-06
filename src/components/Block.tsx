@@ -73,9 +73,7 @@ const Block = forwardRef<BlockElement, Props>(({ session, next }, ref) => {
 
 
   const updateSerialOnBlock = useCallback((serial: SerialReaction) => {
-    console.log('serial', serial)
     const serials = block.serial_reactions || []
-    console.log('block', block)
     if (serials.length > 0) {
       const index = serials.findIndex((item) => item.id === serial.id)
       if (index < 0) {
@@ -93,16 +91,35 @@ const Block = forwardRef<BlockElement, Props>(({ session, next }, ref) => {
     })
   }, [block])
 
+  const updateSerialReactions = useCallback((serial: SerialReaction) => {
+    if (serialReactions.length > 0) {
+      const index = serialReactions.findIndex(item => item.id === serial.id)
+
+      if (index < 0) {
+        setSerialReactions([...serialReactions, serial])
+      } else {
+        setSerialReactions((previous) => {
+          previous[index] = serial
+
+          return previous
+        })
+      }
+    } else {
+      setSerialReactions([...serialReactions, serial])
+    }
+  }, [serialReactions])
+
+
   const createSerials = useCallback(() => {
     const length: number = session.number_serial_per_block as number
     const arr = Array(length).fill('').map((_, i) => {
       return <Serial key={i} isFinished={finished} updateBlock={updateSerialOnBlock} next={(serial, isToCount) => {
         if (isToCount) setCount(count + 1)
-        setSerialReactions([...serialReactions, serial])
+        updateSerialReactions(serial)
       }} />
     })
     setSerials(arr)
-  }, [count, finished, serialReactions, session.number_serial_per_block, updateSerialOnBlock])
+  }, [count, finished, session.number_serial_per_block, updateSerialOnBlock, updateSerialReactions])
 
   useEffect(() => {
     createSerials()
@@ -122,8 +139,6 @@ const Block = forwardRef<BlockElement, Props>(({ session, next }, ref) => {
       }
 
       updateBlock(_block)
-
-      console.log(session)
       if (finished) {
         next()
       } else {
@@ -146,7 +161,6 @@ const Block = forwardRef<BlockElement, Props>(({ session, next }, ref) => {
         }
 
         updateBlock(_block)
-        console.log(session)
         next()
       }
     }
