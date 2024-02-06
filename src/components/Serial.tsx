@@ -3,16 +3,7 @@ import RandomCode from './RandomCode';
 import VerifyCode from './VerifyCode';
 import { SerialReaction } from '../contexts/AppContext';
 import { v4 } from 'uuid';
-
-function generateRandomString(length: number, result: string = "", count: number = 0): string {
-  const charset = "abcdefghijklmnopqrstuvwxyz"
-
-  const randomIndex = Math.floor(Math.random() * charset.length)
-  result += charset[randomIndex]
-  count++
-
-  return count < length ? generateRandomString(length, result, count) : result
-}
+import { generateRandomString } from '../helpers/generatesRandomCode';
 
 interface Props {
   next: (serialReaction: SerialReaction, isToCount: boolean) => void,
@@ -34,7 +25,7 @@ const Serial: React.FC<Props> = ({ next, isFinished, updateBlock }) => {
   useEffect(() => {
     function init() {
       const id = v4()
-      const code = generateRandomString(4)
+      const code = generateRandomString()
       setRandomString(code)
 
       setSerialReaction((previous) => {
