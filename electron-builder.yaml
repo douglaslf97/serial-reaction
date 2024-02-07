@@ -1,6 +1,6 @@
-appId: "com.deborah.serial.reaction"
-productName: "Electron Next.JS"
-copyright: "Copyright (c) 2023 Douglas"
+appId: "com.douglas.serial.reaction"
+productName: "Serial Reaction"
+copyright: "Copyright (c) 2024 Douglas"
 win:
   target: ["dir", "portable", "zip"]
   icon: "resources/icon.ico"
