@@ -8,7 +8,7 @@ import { FormHandles } from '@unform/core'
 import Input from '../../../components/Input'
 import * as Yup from 'yup'
 import { useRouter } from 'next/navigation'
-import { exportToCsv } from '../../../helpers/exportToCSV'
+import { exportData } from '../../../helpers/exportData'
 
 const NewSession: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
@@ -72,8 +72,8 @@ const NewSession: React.FC = () => {
     setSessionId(v4())
   }, [])
 
-  const exportData = useCallback(async () => {
-    await exportToCsv('sessions.yaml', { sessions: user_sessions })
+  const exportDataToYaml = useCallback(async () => {
+    await exportData('sessions.yaml', { sessions: user_sessions })
   }, [user_sessions])
 
   return <div className="bg-white h-screen flex relative isolate overflow-hidden py-16 sm:py-24 lg:py-32">
@@ -81,7 +81,7 @@ const NewSession: React.FC = () => {
       <div className="bg-white h-2xl p-8 mx-auto my-auto rounded-md">
         {user_sessions.some((item) => (item.blocks || []).length > 0) &&
           <div className="mt-1 mb-10 flex items-center justify-end gap-x-6">
-            <button onClick={() => exportData()} type="button" className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">Exportar dados</button>
+            <button onClick={() => exportDataToYaml()} type="button" className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">Exportar dados</button>
           </div>}
 
         <Form ref={formRef} placeholder={null} onSubmit={(value) => handleSubmit(value)}>

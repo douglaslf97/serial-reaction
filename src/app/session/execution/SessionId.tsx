@@ -1,8 +1,8 @@
 "use client"
 import { useRouter, useSearchParams } from 'next/navigation'
 import Block, { BlockElement } from '../../../components/Block';
-import { UserSession, useAppContext } from '../../../contexts/AppContext';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { UserSession, useAppContext } from '../../../contexts/AppContext'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 // import { Container } from './styles';
 

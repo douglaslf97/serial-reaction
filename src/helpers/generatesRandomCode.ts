@@ -1,9 +1,21 @@
-export function generateRandomString(length: number = 4, result: string = "", count: number = 0): string {
-  const charset = "abcd"
+/**
+ * Generates a random string from a charset
+ * @param length the length of the random string generated
+ * @param [charset="asdf"] the charset
+ * @returns the random string
+ */
+export function generateRandomString(length: number = 4, charset: string = "asdf"): string {
+  let result = ""
 
-  const randomIndex = Math.floor(Math.random() * charset.length)
-  result += charset[randomIndex]
-  count++
+  for (let i=0; i<length; i++) {
+    let randomIndex = Math.floor(Math.random() * charset.length)
 
-  return count < length ? generateRandomString(length, result, count) : result
+    while(result.includes(charset[randomIndex])) {
+      randomIndex = Math.floor(Math.random() * charset.length)
+    }
+
+    result+=charset[randomIndex]
+  }
+
+  return result
 }
