@@ -12,16 +12,24 @@ interface Props {
 }
 
 const Serial: React.FC<Props> = ({ next, isFinished, updateBlock }) => {
-  const [serialReaction, setSerialReaction] = useState({ err_numb: 0, finished: false } as SerialReaction)
+  const [serialReaction, setSerialReaction] = useState({ finished: false, spent_time: 0 } as SerialReaction)
   const [randomString, setRandomString] = useState("")
   const [visible, setVisible] = useState(true)
   const [isValid, setValid] = useState(true)
+  const [time, setTime] = useState(0)
 
   const makeInvisible = useCallback(() => {
-    return setTimeout(() => {
-      setVisible(false)
-    }, 2000)
+    document.removeEventListener('keydown', function(evt){})
+    setTimeout(() => setVisible(false), 10)
   }, [])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(time+1)
+    }, 1)
+
+    return () => clearInterval(interval)
+  }, [time])
 
   useEffect(() => {
     function init() {
@@ -41,10 +49,9 @@ const Serial: React.FC<Props> = ({ next, isFinished, updateBlock }) => {
     init()
   }, [])
 
-  const addErrors = useCallback((spent_time: number) => {
+  const addErrors = useCallback((time: number) => {
     const serial = {...serialReaction}
-    serial.err_numb += 1
-    serial.spent_time = spent_time
+    serial.spent_time = time
     setSerialReaction((_) => {
       return serial
     })
@@ -52,6 +59,20 @@ const Serial: React.FC<Props> = ({ next, isFinished, updateBlock }) => {
     updateBlock(serial)
     next(serialReaction, false)
   }, [next, serialReaction, updateBlock])
+
+  useEffect(() => {
+    document.addEventListener('keydown', function(_event) {
+      makeInvisible()
+    })
+
+    return () => document.removeEventListener('keydown', function(evt){})
+  }, [])
+
+  useEffect(() => {
+    if(!visible) {
+      setSerialReaction({...serialReaction, reaction_time: time})
+    }   
+  }, [visible])
 
   const setFinished = (isToCount: boolean) => {
     const serial: SerialReaction = {
@@ -62,10 +83,6 @@ const Serial: React.FC<Props> = ({ next, isFinished, updateBlock }) => {
     updateBlock(serial)
     next(serialReaction, isToCount)
   }
-
-  useEffect(() => {
-    makeInvisible()
-  }, [visible, makeInvisible])
 
   return <>{visible ? <RandomCode randomString={randomString} /> : <VerifyCode setFinished={setFinished} isFinished={isFinished} addError={addErrors} serialReaction={serialReaction} setValid={setValid} randomCode={randomString} />}</>;
 }

@@ -5,7 +5,7 @@ export type SerialReaction = {
   id: string
   serial_code: string
   spent_time: number
-  err_numb: number
+  reaction_time: number
   finished: boolean
 }
 

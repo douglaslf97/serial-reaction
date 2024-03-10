@@ -63,7 +63,6 @@ const Block = forwardRef<BlockElement, Props>(({ session, next }, ref) => {
       setTime(updatedTime)
 
       if (updatedTime >= (session.max_time)) {
-        console.log(session.max_time)
         setFinished(true)
       }
     }, 1000)
@@ -148,23 +147,20 @@ const Block = forwardRef<BlockElement, Props>(({ session, next }, ref) => {
         createSerials()
         setSerialReactions([])
       }
-    } else {
-      if (finished) {
-        const _block: Blocks = {
-          ...block,
-          completed: false,
-          number_serial_reactions_completed: count,
-          serial_reactions: serialReactions,
-          spent_time: serialReactions.reduce((a, b) => {
-            return a + b.spent_time
-          }, 0)
-        }
-
-        updateBlock(_block)
-        next()
+    } else if (finished) {
+      const _block: Blocks = {
+        ...block,
+        completed: false,
+        number_serial_reactions_completed: count,
+        serial_reactions: serialReactions,
+        spent_time: serialReactions.reduce((a, b) => {
+          return a + b.spent_time
+        }, 0)
       }
-    }
 
+      updateBlock(_block)
+      next()
+    }
   }, [block, count, finished, next, serialReactions, session, updateBlock])
 
   useEffect(() => {

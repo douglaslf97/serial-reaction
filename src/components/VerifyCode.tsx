@@ -1,6 +1,6 @@
 "use client";
 import { SerialReaction } from '../contexts/AppContext';
-import React, { FocusEvent, FormEvent, KeyboardEvent, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { FocusEvent, FormEvent, KeyboardEvent, useCallback, useEffect, useRef, useState } from 'react';
 
 interface Props {
   //userSession: UserSession
@@ -13,10 +13,10 @@ interface Props {
 }
 
 const VerifyCode: React.FC<Props> = ({ randomCode, serialReaction, setValid, addError, setFinished, isFinished }) => {
-  const [startTime, setStartTime] = useState<number>(Date.now())
+  const [timeSpent, setTimeSpent] = useState(0)
   const length = 4
   const formRef = useRef<HTMLFormElement>(null)
-  const [isValid, setIsValid] = useState(false)
+  const [isValid, setIsValid] = useState(true)
   const [code, setCode] = useState<string[]>(Array(length).fill(""))
 
   const update = useCallback((index: number, val: string) => {
@@ -59,10 +59,17 @@ const VerifyCode: React.FC<Props> = ({ randomCode, serialReaction, setValid, add
     inp?.focus()
   }, [])
 
-  useLayoutEffect(() => {
-    setStartTime(startTime)
-  }, [startTime])
+  const updateTime = useCallback((time) => {
+    setTimeSpent(time)
+  }, [])
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      updateTime(timeSpent+1)
+    }, 1)
+
+    return () => clearInterval(interval)
+  }, [timeSpent])
 
   const handleChange = useCallback((evt: FormEvent<HTMLInputElement>) => {
     const value = evt.currentTarget.value
@@ -94,10 +101,9 @@ const VerifyCode: React.FC<Props> = ({ randomCode, serialReaction, setValid, add
         });
       }
     } else {
-      addError(Date.now() - startTime)
       evt.currentTarget.classList.add('border-red-500')
       evt.currentTarget.classList.add('ring-red-700')
-      evt.currentTarget.focus()
+      evt.currentTarget.focus()   
     }
   }, [addError, code, randomCode, update])
 
@@ -108,22 +114,22 @@ const VerifyCode: React.FC<Props> = ({ randomCode, serialReaction, setValid, add
   useEffect(() => {
     if (code.every(i => i != "")) {
       if (isValid) {
-        serialReaction.spent_time = Date.now() - startTime
+        serialReaction.spent_time = timeSpent
         serialReaction.finished = true
         setValid(true)
       } else {
-        serialReaction.spent_time = Date.now() - startTime
+        serialReaction.spent_time = timeSpent
         serialReaction.finished = false
         setValid(false)
       }
       setFinished(true)
-    } else if(isFinished) {
-      serialReaction.spent_time = Date.now() - startTime
+    } else if(isFinished || !isValid) {
+      serialReaction.spent_time = timeSpent
       serialReaction.finished = false
       setValid(false)
-      setFinished(false)
+      setTimeout(() => setFinished(true), 1000)
     }
-  }, [code, serialReaction])
+  }, [code, serialReaction, isValid])
 
 
   return <div className="relative flex h-screen w-screen flex-col justify-center overflow-hidden bg-gray-50 py-12">
