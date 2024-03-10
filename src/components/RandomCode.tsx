@@ -1,6 +1,6 @@
 "use client";
 
-import React, { HtmlHTMLAttributes } from 'react'
+import React, { HtmlHTMLAttributes, useEffect, useRef, useState } from 'react'
 
 
 interface Props {
@@ -8,18 +8,35 @@ interface Props {
   randomString: string
 }
 
-export interface RandomCodeElement extends HtmlHTMLAttributes<HTMLDivElement> {
-  randomString: string
-}
+const RandomCode: React.FC<Props> = ({ randomString, randomPosition }) => {
+  const [styles, setStyles] = useState<React.CSSProperties>({})
 
+  useEffect(() => {
+    if (randomPosition) {
+      const bound = document.body.getBoundingClientRect()
+      if (bound) {
+        let top = Math.floor(Math.random() * bound.height)
+        top = top + 80 > bound.height ? bound.height - 80 : top < 0 ? 80 : top
+        let left = Math.floor(Math.random() * bound.width)
+        left = left + 165 > bound.width ? bound.width - 165 : left < 0 ? 165 : left
 
-const RandomCode: React.FC<Props> =  ({randomString})  => {
-  return <div className="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-    <div className="fixed inset-0 bg-white transition-opacity"></div>
+        console.log('top', top)
+        console.log('left', left)
+        setStyles({
+          position: 'absolute',
+          top: top,
+          left: left,
+          transform: 'translate(-50%, -50%)',
+          zIndex: 10000
+        })
+      }
+    }
+  }, [randomPosition])
 
-    <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-      <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-        <div className="relative transform overflow-hidden rounded-lg bg-white text-middle shadow-xl transition-all sm:my-8 p">
+  return <div className="relative z-10 min-h-screen bg-white" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div className="inset-0 z-10 w-screen overflow-y-auto">
+      <div className="flex min-h-screen items-end justify-center p-4 text-center sm:items-center sm:p-0">
+        <div style={styles} className="relative transform overflow-hidden rounded-lg bg-white text-middle shadow-xl transition-all sm:my-8 p">
           <div id="item-size" className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
             <div className="flex items-center justify-center sm:flex sm:items-center">
               <div className="mx-auto flex h-12 w-16 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">

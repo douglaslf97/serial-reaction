@@ -20,6 +20,8 @@
     "type-check": "tsc -p ./src/tsconfig.json && tsc -p ./electron-src/tsconfig.json"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.18",
+    "@heroicons/react": "^2.1.1",
     "@jspsych/plugin-serial-reaction-time": "^1.1.4",
     "@unform/core": "^2.1.6",
     "@unform/web": "^2.1.6",

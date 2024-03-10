@@ -14,10 +14,9 @@ interface Props {
 
 const VerifyCode: React.FC<Props> = ({ randomCode, serialReaction, setValid, addError, setFinished, isFinished }) => {
   const [timeSpent, setTimeSpent] = useState(0)
-  const length = 4
   const formRef = useRef<HTMLFormElement>(null)
   const [isValid, setIsValid] = useState(true)
-  const [code, setCode] = useState<string[]>(Array(length).fill(""))
+  const [code, setCode] = useState<string[]>(Array(randomCode.length).fill(""))
 
   const update = useCallback((index: number, val: string) => {
     setCode(() => {
@@ -65,45 +64,47 @@ const VerifyCode: React.FC<Props> = ({ randomCode, serialReaction, setValid, add
 
   useEffect(() => {
     const interval = setInterval(() => {
-      updateTime(timeSpent+1)
+      updateTime(timeSpent + 1)
     }, 1)
 
     return () => clearInterval(interval)
   }, [timeSpent])
 
   const handleChange = useCallback((evt: FormEvent<HTMLInputElement>) => {
-    const value = evt.currentTarget.value
-    const index = parseInt(evt.currentTarget.dataset.index as string)
-    const form = formRef.current
-    if (isNaN(index) || form === null) return // just in case
+    if (!evt.currentTarget.disabled) {
+      const value = evt.currentTarget.value
+      const index = parseInt(evt.currentTarget.dataset.index as string)
+      const form = formRef.current
+      if (isNaN(index) || form === null) return // just in case
 
-    let nextIndex = index + 1
-    let nextInput: HTMLInputElement | null = form.querySelector(`.input-${nextIndex}`)
+      let nextIndex = index + 1
+      let nextInput: HTMLInputElement | null = form.querySelector(`.input-${nextIndex}`)
 
-    const updatedCode = code.slice()
-    updatedCode[index] = value[0]
+      const updatedCode = code.slice()
+      updatedCode[index] = value[0]
 
-    const isValid = randomCode.toLowerCase().startsWith(updatedCode.join("").toLowerCase())
-    setIsValid(isValid)
+      const isValid = randomCode.toLowerCase().startsWith(updatedCode.join("").toLowerCase())
+      setIsValid(isValid)
 
-    if (isValid) {
-      update(index, value[0] || "")
-      evt.currentTarget.classList.remove('border-red-700')
-      evt.currentTarget.classList.remove('ring-red-700')
-      if (value.length === 1) nextInput?.focus()
-      else if (index < length - 1) {
-        const split = value.slice(index + 1, length).split("")
-        split.forEach((val) => {
-          update(nextIndex, val)
-          nextInput?.focus()
-          nextIndex++
-          nextInput = form.querySelector(`.input-${nextIndex}`)
-        });
+      if (isValid) {
+        update(index, value[0] || "")
+        evt.currentTarget.classList.remove('border-red-700')
+        evt.currentTarget.classList.remove('ring-red-700')
+        if (value.length === 1) nextInput?.focus()
+        else if (index < length - 1) {
+          const split = value.slice(index + 1, length).split("")
+          split.forEach((val) => {
+            update(nextIndex, val)
+            nextInput?.focus()
+            nextIndex++
+            nextInput = form.querySelector(`.input-${nextIndex}`)
+          });
+        }
+      } else {
+        evt.currentTarget.classList.add('border-red-500')
+        evt.currentTarget.classList.add('ring-red-700')
+        evt.currentTarget.disabled = true
       }
-    } else {
-      evt.currentTarget.classList.add('border-red-500')
-      evt.currentTarget.classList.add('ring-red-700')
-      evt.currentTarget.focus()   
     }
   }, [addError, code, randomCode, update])
 
@@ -123,7 +124,7 @@ const VerifyCode: React.FC<Props> = ({ randomCode, serialReaction, setValid, add
         setValid(false)
       }
       setFinished(true)
-    } else if(isFinished || !isValid) {
+    } else if (isFinished || !isValid) {
       serialReaction.spent_time = timeSpent
       serialReaction.finished = false
       setValid(false)
@@ -148,7 +149,7 @@ const VerifyCode: React.FC<Props> = ({ randomCode, serialReaction, setValid, add
         <div>
           <form ref={formRef} action="" method="post">
             <div className="flex flex-col space-y-16">
-              <div className="flex flex-row items-center justify-between mx-auto w-full max-w-xs">
+              <div className={`flex flex-row items-center ${code.length === 1 ? 'justify-center' : 'justify-between'} mx-auto w-full max-w-xs`}>
                 {code.map((value, i) => {
                   return <div key={i} className="w-16 h-16 ">
                     <input

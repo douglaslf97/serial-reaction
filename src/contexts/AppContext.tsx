@@ -1,6 +1,10 @@
 "use client"
 
 import React, { useCallback, useContext, useState } from 'react'
+export enum TaskNumber {
+  FIRST = "1",
+  SECOND = "2"
+}
 export type SerialReaction = {
   id: string
   serial_code: string
@@ -21,6 +25,7 @@ export type UserSession = {
   id: string
   name: string
   max_time: number,
+  taskNumber: TaskNumber
   number_serial_per_block: number
   blocks: Array<Blocks>
 }

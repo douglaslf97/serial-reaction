@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, memo } from 'react';
+import React, { useCallback, useEffect, useState, memo, useRef } from 'react';
 import RandomCode from './RandomCode';
 import VerifyCode from './VerifyCode';
 import { SerialReaction } from '../contexts/AppContext';
@@ -8,10 +8,11 @@ import { generateRandomString } from '../helpers/generatesRandomCode';
 interface Props {
   next: (serialReaction: SerialReaction, isToCount: boolean) => void,
   updateBlock: (serial: SerialReaction) => void
-  isFinished: boolean
+  isFinished: boolean,
+  isTaskTwo?: boolean
 }
 
-const Serial: React.FC<Props> = ({ next, isFinished, updateBlock }) => {
+const Serial: React.FC<Props> = ({ next, isFinished, updateBlock, isTaskTwo }) => {
   const [serialReaction, setSerialReaction] = useState({ finished: false, spent_time: 0 } as SerialReaction)
   const [randomString, setRandomString] = useState("")
   const [visible, setVisible] = useState(true)
@@ -34,7 +35,7 @@ const Serial: React.FC<Props> = ({ next, isFinished, updateBlock }) => {
   useEffect(() => {
     function init() {
       const id = v4()
-      const code = generateRandomString()
+      const code = generateRandomString(isTaskTwo ? 1 : undefined)
       setRandomString(code)
 
       setSerialReaction((previous) => {
@@ -84,7 +85,7 @@ const Serial: React.FC<Props> = ({ next, isFinished, updateBlock }) => {
     next(serialReaction, isToCount)
   }
 
-  return <>{visible ? <RandomCode randomString={randomString} /> : <VerifyCode setFinished={setFinished} isFinished={isFinished} addError={addErrors} serialReaction={serialReaction} setValid={setValid} randomCode={randomString} />}</>;
+  return <>{visible ? <RandomCode randomPosition={isTaskTwo} randomString={randomString} /> : <VerifyCode setFinished={setFinished} isFinished={isFinished} addError={addErrors} serialReaction={serialReaction} setValid={setValid} randomCode={randomString} />}</>;
 }
 
 export default memo(Serial);

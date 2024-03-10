@@ -1,4 +1,4 @@
-import { SerialReaction, UserSession, Blocks } from '../contexts/AppContext';
+import { SerialReaction, UserSession, Blocks, TaskNumber } from '../contexts/AppContext';
 import React, { HtmlHTMLAttributes, forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import Serial from './Serial';
 import { useRouter } from 'next/navigation';
@@ -112,7 +112,7 @@ const Block = forwardRef<BlockElement, Props>(({ session, next }, ref) => {
   const createSerials = useCallback(() => {
     const length: number = session.number_serial_per_block as number
     const arr = Array(length).fill('').map((_, i) => {
-      return <Serial key={i} isFinished={finished} updateBlock={updateSerialOnBlock} next={(serial, isToCount) => {
+      return <Serial isTaskTwo={TaskNumber.SECOND===session.taskNumber} key={i} isFinished={finished} updateBlock={updateSerialOnBlock} next={(serial, isToCount) => {
         if (isToCount) setCount(count + 1)
         updateSerialReactions(serial)
       }} />
@@ -167,11 +167,11 @@ const Block = forwardRef<BlockElement, Props>(({ session, next }, ref) => {
     updateBlocks()
   }, [count, finished, router, serialReactions, session, updateBlocks])
 
-  return <div>{serialsElement.map((item, i) => {
+  return <>{serialsElement.map((item, i) => {
     if (i === count) {
       return item
     }
-  })}</div>;
+  })}</>;
 })
 
 Block.displayName = "Block"

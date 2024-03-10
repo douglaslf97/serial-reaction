@@ -2,23 +2,25 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { v4 } from 'uuid'
-import { useAppContext } from '../../../contexts/AppContext'
+import { TaskNumber, useAppContext } from '../../../contexts/AppContext'
 import { Form } from '@unform/web'
 import { FormHandles } from '@unform/core'
 import Input from '../../../components/Input'
 import * as Yup from 'yup'
 import { useRouter } from 'next/navigation'
 import { exportData } from '../../../helpers/exportData'
+import SelectField, { SelectFieldRef } from '../../../components/SelectField'
 
 const NewSession: React.FC = () => {
   const formRef = useRef<FormHandles>(null)
+  const selectRef = useRef<SelectFieldRef<TaskNumber>>(null)
   const router = useRouter()
   const [session_id, setSessionId] = useState('')
 
   const { addUserSession, user_sessions } = useAppContext()
   const handleSubmit = useCallback(async (data: any) => {
     try {
-      if (formRef.current) {
+      if (formRef.current && selectRef.current) {
         formRef.current.setErrors({})
 
         const schema = Yup.object().shape({
@@ -46,7 +48,8 @@ const NewSession: React.FC = () => {
           max_time: data.max_time,
           name: data.name,
           number_serial_per_block: Number(data.number_serial_per_block),
-          blocks: []
+          blocks: [],
+          taskNumber: selectRef.current.value
         })
 
         router.push(`/session/execution/?session_id=${data.id}`)
@@ -95,6 +98,15 @@ const NewSession: React.FC = () => {
               <Input label="Nome" name="name" />
               <Input defaultValue={10} label="Quantidade de sequências por bloco" name="number_serial_per_block" type="number" />
               <Input defaultValue={10} label="Tempo máximo da sessão" name="max_time" type="number" placeholder="Em minutos" />
+              <SelectField ref={selectRef} name="tasks" label="Tarefa" items={[{
+                id: 0,
+                name: "Tarefa 1",
+                value: TaskNumber.FIRST
+                }, {
+                  id: 1,
+                  name: "Tarefa 2",
+                  value: TaskNumber.SECOND
+                }]} />
             </div>
           </div>
           <div className="mt-6 flex items-center justify-end gap-x-6">

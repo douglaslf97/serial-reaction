@@ -37,7 +37,7 @@ const SessionId: React.FC = () => {
   }, [getUserSession, searchParams])
 
   return <div className='w-screen h-screen'>
-    <Block ref={blockRef} next={next} session={session} />
+    {session?.taskNumber ? <Block ref={blockRef} next={next} session={session} /> : <></>}
   </div>;
 }
 
