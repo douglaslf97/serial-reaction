@@ -30,6 +30,11 @@ const NewSession: React.FC = () => {
             .defined("Esse campo deve conter apenas números")
             .min(1, "O mínimo para esse campo é 1")
             .required("Esse campo é obrigatório"),
+          number_blocks_per_session: Yup.number()
+            .transform((value) => Number.isNaN(value) ? 0 : value)
+            .defined("Esse campo deve conter apenas números")
+            .min(1, "O mínimo para esse campo é 1")
+            .required("Esse campo é obrigatório"),
           max_time: Yup.number()
             .transform((value) => Number.isNaN(value) ? 0 : value)
             .defined("Esse campo é obrigatório")
@@ -49,6 +54,7 @@ const NewSession: React.FC = () => {
           name: data.name,
           number_serial_per_block: Number(data.number_serial_per_block),
           blocks: [],
+          number_blocks_per_session: Number(data.number_blocks_per_session),
           taskNumber: selectRef.current.value
         })
 
@@ -96,6 +102,7 @@ const NewSession: React.FC = () => {
             </div>
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
               <Input label="Nome" name="name" />
+              <Input defaultValue={10} label="Quantidade de blocos" name="number_blocks_per_session" type="number" placeholder="Quantidade de blocos" />
               <Input defaultValue={10} label="Quantidade de sequências por bloco" name="number_serial_per_block" type="number" />
               <Input defaultValue={10} label="Tempo máximo da sessão" name="max_time" type="number" placeholder="Em minutos" />
               <SelectField ref={selectRef} name="tasks" label="Tarefa" items={[{

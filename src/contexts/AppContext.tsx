@@ -27,6 +27,7 @@ export type UserSession = {
   max_time: number,
   taskNumber: TaskNumber
   number_serial_per_block: number
+  number_blocks_per_session: number
   blocks: Array<Blocks>
 }
 

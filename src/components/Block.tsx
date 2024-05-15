@@ -30,16 +30,21 @@ const Block = forwardRef<BlockElement, Props>(({ session, next }, ref) => {
   const router = useRouter()
 
   const updateBlock = useCallback((block: Blocks) => {
-    if (session.blocks.length > 0) {
-      const index = session.blocks.findIndex(item => item.id === block.id)
-      if (index < 0) {
-        session.blocks.push(block)
+    if (session.blocks.length < session.number_blocks_per_session) {
+      if (session.blocks.length > 0) {
+        const index = session.blocks.findIndex(item => item.id === block.id)
+        if (index < 0) {
+          session.blocks.push(block)
+        } else {
+          session.blocks[index] = block
+        }
       } else {
-        session.blocks[index] = block
+        session.blocks.push(block)
       }
     } else {
-      session.blocks.push(block)
+      setFinished(true)
     }
+
   }, [session.blocks])
 
 
@@ -112,7 +117,7 @@ const Block = forwardRef<BlockElement, Props>(({ session, next }, ref) => {
   const createSerials = useCallback(() => {
     const length: number = session.number_serial_per_block as number
     const arr = Array(length).fill('').map((_, i) => {
-      return <Serial isTaskTwo={TaskNumber.SECOND===session.taskNumber} key={i} isFinished={finished} updateBlock={updateSerialOnBlock} next={(serial, isToCount) => {
+      return <Serial isTaskTwo={TaskNumber.SECOND === session.taskNumber} key={i} isFinished={finished} updateBlock={updateSerialOnBlock} next={(serial, isToCount) => {
         if (isToCount) setCount(count + 1)
         updateSerialReactions(serial)
       }} />
